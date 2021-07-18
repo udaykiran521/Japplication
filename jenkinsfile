@@ -6,7 +6,7 @@ pipeline {
             steps {
                 script {
                     getBuildUser()
-                    currentBuild.displayName = "#${currentBuild.number} | ${env.BUILD_USER} | ${params.BRANCH}" 
+                    //currentBuild.displayName = "#${currentBuild.number} | ${env.BUILD_USER} | ${params.BRANCH}" 
                     deleteDir()
                 }
             }
