@@ -1,6 +1,17 @@
 pipeline {
     agent any
-    stage('Checkout Japplication'){
+    
+    stages {
+        stage('Ensure clean workspace'){
+            steps {
+                script {
+                    getBuildUser()
+                    currentBuild.displayName = "#${currentBuild.number} | ${env.BUILD_USER} | ${params.BRANCH}" 
+                    deleteDir()
+                }
+            }
+        }
+        stage('Checkout Japplication'){
             steps {
                 script {
                     checkout(
@@ -25,7 +36,6 @@ pipeline {
                 }
             }
         }
-    stages {
         stage ('Initialize') {
             steps {
                 sh '''
