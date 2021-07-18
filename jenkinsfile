@@ -1,9 +1,30 @@
 pipeline {
     agent any
-    tools {
-        maven 'Maven 3.3.9'
-        jdk 'jdk8'
-    }
+    stage('Checkout Japplication'){
+            steps {
+                script {
+                    checkout(
+                        [
+                            $class: 'GitSCM', 
+                            branches: 
+                            [
+                                [name: "main"]
+                            ], 
+                            doGenerateSubmoduleConfigurations: false, 
+                            extensions: [], 
+                            submoduleCfg: [], 
+                            userRemoteConfigs: 
+                            [
+                                [
+                                    credentialsId: 'gitpass', 
+                                    url: "https://github.com/koppularajender/Japplication.git"
+                                ]
+                            ]
+                        ]
+                    )
+                }
+            }
+        }
     stages {
         stage ('Initialize') {
             steps {
@@ -17,8 +38,6 @@ pipeline {
         stage ('Build') {
             steps {
                 sh 'mvn -Dmaven.test.failure.ignore=true install'
-		# sh 'mvn package'
-		# sh 'java -jar /target/*.war' 
             }
             post {
                 success {
