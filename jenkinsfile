@@ -1,15 +1,38 @@
 pipeline {
     agent any
-    tools {
-        maven 'Maven 3.3.9'
-        jdk 'jdk8'
-    }
+    
     stages {
+        stage('Checkout Japplication'){
+            steps {
+                script {
+                    checkout(
+                        [
+                            $class: 'GitSCM', 
+                            branches: 
+                            [
+                                [name: "main"]
+                            ], 
+                            doGenerateSubmoduleConfigurations: false, 
+                            extensions: [], 
+                            submoduleCfg: [], 
+                            userRemoteConfigs: 
+                            [
+                                [
+                                    credentialsId: 'gitpass', 
+                                    url: "https://github.com/koppularajender/Japplication.git"
+                                ]
+                            ]
+                        ]
+                    )
+                }
+            }
+        }
         stage ('Initialize') {
             steps {
                 sh '''
                     echo "PATH = ${PATH}"
                     echo "M2_HOME = ${M2_HOME}"
+                    echo "this is 2nd stage"
                 '''
             }
         }
@@ -17,12 +40,10 @@ pipeline {
         stage ('Build') {
             steps {
                 sh 'mvn -Dmaven.test.failure.ignore=true install'
-		# sh 'mvn package'
-		# sh 'java -jar /target/*.war' 
             }
             post {
                 success {
-                    junit 'target/surefire-reports/**/*.xml' 
+                    junit allowEmptyResults: true, testResults: '**/test-results/*.xml'
                 }
             }
         }
