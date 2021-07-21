@@ -1,0 +1,52 @@
+pipeline {
+    agent any
+    
+    stages {
+        stage('Checkout Japplication'){
+            steps {
+                script {
+                    checkout(
+                        [
+                            $class: 'GitSCM', 
+                            branches: 
+                            [
+                                [name: "main"]
+                            ], 
+                            doGenerateSubmoduleConfigurations: false, 
+                            extensions: [], 
+                            submoduleCfg: [], 
+                            userRemoteConfigs: 
+                            [
+                                [
+                                    credentialsId: 'github_cred', 
+                                    url: "https://github.com/udaykiran521/Japplication.git"
+                                ]
+                            ]
+                        ]
+                    )
+                }
+            }
+        }
+        stage ('Initialize') {
+            steps {
+                sh '''
+                    echo "PATH = ${PATH}"
+                    echo "M2_HOME = ${M2_HOME}"
+                    echo "this is 2nd stage"
+		    echo " this pipeline is initiliazed by Uday"
+                '''
+            }
+        }
+
+        stage ('Build') {
+            steps {
+                sh 'mvn -Dmaven.test.failure.ignore=true install'
+            }
+            post {
+                success {
+                    junit allowEmptyResults: true, testResults: '**/test-results/*.xml'
+                }
+            }
+        }
+    }
+}
